@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>To-Do App</title>
+<style>
+body {
+  font-family: sans-serif;
+}
+#todo-list {
+  list-style-type: none;
+  padding: 0;
+}
+#todo-list li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+#todo-list li input[type="checkbox"] {
+  margin-right: 10px;
+}
+#todo-list li span {
+  flex-grow: 1;
+}
+#todo-list li .edit-mode {
+  display: none;
+}
+</style>
+</head>
+<body>
+
+<h1>To-Do List</h1>
+
+<input type="text" id="new-task-description" placeholder="Enter task description">
+<input type="datetime-local" id="new-task-datetime">
+<button onclick="addTask()">Add Task</button>
+
+<ul id="todo-list">
+</ul>
+
+<script>
+function addTask() {
+  const description = document.getElementById('new-task-description').value;
+  const datetime = document.getElementById('new-task-datetime').value;
+
+  if (description.trim() === '') {
+    alert('Please enter a task description.');
+    return;
+  }
+
+  const li = document.createElement('li');
+  li.innerHTML = `
+    <input type="checkbox" onchange="toggleComplete(this)">
+    <span>${description}</span>
+    <span class="edit-mode"><input type="text" value="${description}"></span>
+    <span class="due-date">${datetime ? new Date(datetime).toLocaleString() : ''}</span>
+    <button onclick="editTask(this)">Edit</button>
+    <button onclick="deleteTask(this)">Delete</button>
+  `;
+  document.getElementById('todo-list').appendChild(li);
+
+  document.getElementById('new-task-description').value = '';
+  document.getElementById('new-task-datetime').value = '';
+}
+
+function toggleComplete(checkbox) {
+  const span = checkbox.nextElementSibling;
+  span.classList.toggle('completed');
+}
+
+function editTask(button) {
+  const li = button.parentNode;
+  const span = li.querySelector('span:not(.edit-mode)');
+  const editMode = li.querySelector('.edit-mode');
+
+  span.style.display = 'none';
+  editMode.style.display = 'inline';
+  editMode.querySelector('input').focus();
+
+  editMode.querySelector('input').addEventListener('blur', () => {
+    span.textContent = editMode.querySelector('input').value;
+    span.style.display = 'inline';
+    editMode.style.display = 'none';
+  });
+}
+
+function deleteTask(button) {
+  const li = button.parentNode;
+  document.getElementById('todo-list').removeChild(li);
+}
+</script>
+
+</body>
+</html>
